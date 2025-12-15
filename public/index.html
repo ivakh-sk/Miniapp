@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Крестики-нолики</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">✦</div>
+        <div>
+          <h1>Крестики-нолики</h1>
+          <p class="subtitle">Победите — получите промокод на скидку</p>
+        </div>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="topbar">
+        <div class="status" id="status">Ваш ход</div>
+        <button class="btn btn-ghost" id="resetBtn" type="button">Начать заново</button>
+      </div>
+
+      <div class="board" id="board" role="grid" aria-label="Игровое поле 3 на 3"></div>
+
+      <div class="footerHint">
+        Вы играете <span class="pill pill-x">X</span>, компьютер — <span class="pill pill-o">O</span>.
+      </div>
+
+      <div class="ctaRow" id="ctaRow" hidden>
+        <button class="btn btn-primary" id="playAgainBtn" type="button">Сыграть ещё раз</button>
+      </div>
+
+      <div class="toast" id="toast" hidden></div>
+    </section>
+
+    <div class="modalOverlay" id="winOverlay" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+        <h2 id="winTitle">Победа!</h2>
+        <p class="modalText">Ваш промокод на скидку:</p>
+        <div class="codeBox" id="promoCode">•••••</div>
+
+        <div class="modalActions">
+          <button class="btn btn-ghost" id="copyBtn" type="button">Скопировать</button>
+          <button class="btn btn-primary" id="closeWinBtn" type="button">Сыграть ещё раз</button>
+        </div>
+
+        <p class="modalFineprint">Промокод отображается один раз. Скопируйте и сохраните.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
