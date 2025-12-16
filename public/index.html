@@ -4,52 +4,54 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Крестики-нолики</title>
-  <link rel="stylesheet" href="styles.css" />
+
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <main class="app">
     <header class="header">
-      <div class="brand">
-        <div class="logo" aria-hidden="true">✦</div>
-        <div>
-          <h1>Крестики-нолики</h1>
-          <p class="subtitle">Победите — получите промокод на скидку</p>
-        </div>
+      <div class="icon">✦</div>
+      <div>
+        <h1>Крестики-нолики</h1>
+        <p class="subtitle">Победите — получите промокод на скидку</p>
       </div>
     </header>
 
     <section class="card">
       <div class="topbar">
-        <div class="status" id="status">Ваш ход</div>
-        <button class="btn btn-ghost" id="resetBtn" type="button">Начать заново</button>
+        <div id="status" class="status">Ваш ход</div>
       </div>
 
-      <div class="board" id="board" role="grid" aria-label="Игровое поле 3 на 3"></div>
+      <div id="board" class="board"></div>
 
-      <div class="footerHint">
-        Вы играете <span class="pill pill-x">X</span>, компьютер — <span class="pill pill-o">O</span>.
+      <div class="controls">
+        <button id="resetBtn" class="btn soft" type="button">Начать заново</button>
       </div>
 
-      <div class="ctaRow" id="ctaRow" hidden>
-        <button class="btn btn-primary" id="playAgainBtn" type="button">Сыграть ещё раз</button>
+      <div class="hint">
+        Вы играете <span class="x">X</span>, компьютер — <span class="o">O</span>.
       </div>
 
-      <div class="toast" id="toast" hidden></div>
+      <div id="ctaRow" class="cta" hidden>
+        <button id="playAgainBtn" class="btn primary" type="button">Сыграть ещё раз</button>
+      </div>
     </section>
 
-    <div class="modalOverlay" id="winOverlay" hidden>
-      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="winTitle">
-        <h2 id="winTitle">Победа!</h2>
-        <p class="modalText">Ваш промокод на скидку:</p>
-        <div class="codeBox" id="promoCode">•••••</div>
+    <!-- Окно победы -->
+    <div id="winOverlay" class="overlay" hidden>
+      <div class="modal">
+        <h2>Победа!</h2>
+        <p>Ваш промокод на скидку:</p>
 
-        <div class="modalActions">
-          <button class="btn btn-ghost" id="copyBtn" type="button">Скопировать</button>
-          <button class="btn btn-primary" id="closeWinBtn" type="button">Сыграть ещё раз</button>
+        <div id="promoCode" class="promo"></div>
+
+        <div class="modal-actions">
+          <button id="copyBtn" class="btn ghost" type="button">Скопировать</button>
+          <button id="closeWinBtn" class="btn primary" type="button">Сыграть ещё раз</button>
         </div>
 
-        <p class="modalFineprint">Промокод отображается один раз. Скопируйте и сохраните.</p>
+        <p class="note">Промокод отображается один раз. Скопируйте и сохраните.</p>
       </div>
     </div>
   </main>
