@@ -58,36 +58,27 @@ function clickCell(i) {
   nextTurn();
 }
 
-/**
- * ИИ "чуть тупее": с вероятностью (1-SKILL) делает случайный ход.
- * При этом при SKILL он пытается:
- * 1) выиграть одним ходом
- * 2) заблокировать победу игрока
- * 3) центр
- * 4) углы
- * 5) случайный
- */
 function aiMove() {
   const free = board.map((v, i) => (v ? null : i)).filter(v => v !== null);
   if (!free.length) return;
 
-  // 0.55–0.7 — комфортный диапазон. Ниже = легче выиграть.
+  // 0.55–0.7 — “комфортно обыгрываемый”
   const SKILL = 0.60;
 
-  // Иногда ошибка — случайный ход
+  // Иногда ИИ ошибается — случайный ход
   if (Math.random() > SKILL) {
     board[free[Math.floor(Math.random() * free.length)]] = AI;
     return;
   }
 
-  // Выиграть сейчас
+  // Выиграть одним ходом
   const winIdx = findBestImmediateMove(AI);
   if (winIdx !== null) {
     board[winIdx] = AI;
     return;
-  }
+ t  }
 
-  // Заблокировать игрока
+  // Блокировать игрока
   const blockIdx = findBestImmediateMove(PLAYER);
   if (blockIdx !== null) {
     board[blockIdx] = AI;
@@ -172,7 +163,7 @@ async function endGame(result) {
       return;
     }
 
-    promoCodeEl.textContent = String(data.code); // ТОЛЬКО цифры
+    promoCodeEl.textContent = String(data.code); // цифры
     winOverlay.hidden = false;
 
   } else if (result === AI) {
@@ -209,7 +200,7 @@ copyBtn.onclick = async () => {
   try {
     await navigator.clipboard.writeText(code);
   } catch {
-    // Если clipboard запрещен — пользователь сможет выделить вручную
+    // если clipboard запрещен — можно выделить вручную
   }
 };
 

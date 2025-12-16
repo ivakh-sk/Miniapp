@@ -1,136 +1,102 @@
-
 /* ===== Base ===== */
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background: linear-gradient(180deg, #fff5fa, #f7f0ff);
   color: #2b2b2b;
 }
 
-.app {
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 16px;
-}
+.app { max-width: 420px; margin: 0 auto; padding: 16px; }
 
 /* ===== Header ===== */
-.header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-}
+.header { display: flex; align-items: center; gap: 12px; margin: 10px 0 14px; }
 
-.header .icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
+.icon {
+  width: 40px; height: 40px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
   background: linear-gradient(135deg, #f6b1d8, #c8b6ff);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
+  color: #2b2b2b; font-weight: 800;
 }
 
-.header h1 {
-  font-size: 22px;
-  margin: 0;
+.header h1 { margin: 0; font-size: 24px; letter-spacing: 0.2px; }
+
+.subtitle { margin: 4px 0 0; font-size: 14px; color: #777; }
+
+/* ===== Card ===== */
+.card {
+  background: rgba(255,255,255,0.9);
+  border-radius: 22px;
+  padding: 16px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+  backdrop-filter: blur(8px);
 }
 
-.subtitle {
-  font-size: 14px;
-  color: #777;
-  margin-bottom: 16px;
-}
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 
-/* ===== Status row ===== */
-.status-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.status {
-  font-size: 15px;
-  font-weight: 500;
-}
-
-.reset-btn {
-  border: none;
-  background: #ffffff;
-  padding: 8px 14px;
-  border-radius: 12px;
-  font-size: 14px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
+.status { font-size: 15px; font-weight: 600; color: #333; }
 
 /* ===== Board ===== */
-.board {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
+.board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
 .cell {
   aspect-ratio: 1 / 1;
+  border-radius: 22px;
+  border: 2px solid rgba(0,0,0,0.12);
   background: #ffffff;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 48px;
-  font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 50px; font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.08);
 }
 
-.cell.x {
-  color: #e85d9e;
+.cell:active { transform: scale(0.98); }
+
+.cell.x { color: #e85d9e; }
+.cell.o { color: #6a5cff; }
+
+/* ===== Controls ===== */
+.controls { margin-top: 14px; display: flex; justify-content: center; }
+
+.hint { margin-top: 12px; text-align: center; font-size: 13px; color: #666; }
+
+.x { color: #e85d9e; font-weight: 800; }
+.o { color: #6a5cff; font-weight: 800; }
+
+/* ===== Buttons ===== */
+.btn {
+  border: none;
+  border-radius: 16px;
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
-.cell.o {
-  color: #6a5cff;
+.btn.primary {
+  background: linear-gradient(135deg, #f6b1d8, #c8b6ff);
+  color: #2b2b2b;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.10);
 }
 
-.cell:active {
-  transform: scale(0.96);
+.btn.ghost {
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.10);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.08);
 }
 
-/* ===== Footer ===== */
-.footer {
-  margin-top: 20px;
-  text-align: center;
-  font-size: 13px;
-  color: #777;
+.btn.soft {
+  background: linear-gradient(135deg, #ffe1ef, #ece9ff);
+  color: #2b2b2b;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.08);
 }
 
-.badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-weight: 600;
-  margin: 0 4px;
-}
+/* ===== CTA row ===== */
+.cta { margin-top: 14px; display: flex; justify-content: center; }
 
-.badge.x {
-  background: #ffe1ef;
-  color: #e85d9e;
-}
-
-.badge.o {
-  background: #ece9ff;
-  color: #6a5cff;
-}
-
-/* ===== Overlay / Win modal ===== */
+/* ===== Overlay / Modal ===== */
 .overlay {
   position: fixed;
   inset: 0;
@@ -142,88 +108,38 @@ body {
   z-index: 100;
 }
 
-.overlay[hidden] {
-  display: none !important;
-}
+.overlay[hidden] { display: none !important; }
 
 .modal {
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 24px;
   width: 100%;
   max-width: 360px;
-  text-align: center;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-}
-
-.modal h2 {
-  margin-top: 0;
-  font-size: 26px;
-}
-
-.modal p {
-  font-size: 15px;
-  color: #666;
-}
-
-/* ===== Promo code ===== */
-.promo {
-  margin: 16px 0;
-  padding: 14px;
-  border-radius: 14px;
-  background: #f8f4ff;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  color: #6a5cff;
-  user-select: all;
-}
-
-/* ===== Modal buttons ===== */
-.modal-buttons {
-  display: flex;
-  gap: 12px;
-  margin-top: 12px;
-}
-
-.btn {
-  flex: 1;
-  border: none;
-  border-radius: 16px;
-  padding: 12px;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-.btn.copy {
   background: #ffffff;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  border-radius: 24px;
+  padding: 22px;
+  text-align: center;
+  box-shadow: 0 22px 50px rgba(0,0,0,0.24);
 }
 
-.btn.again {
-  background: linear-gradient(135deg, #f6b1d8, #c8b6ff);
-  color: #ffffff;
+.modal h2 { margin: 0 0 8px; font-size: 26px; }
+
+.modal p { margin: 0 0 12px; color: #666; font-size: 14px; }
+
+.promo {
+  margin: 14px 0 10px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #f8f4ff;
+  color: #6a5cff;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 5px;
+  user-select: all;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }
 
-/* ===== Toast ===== */
-.toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #2b2b2b;
-  color: #ffffff;
-  padding: 10px 16px;
-  border-radius: 999px;
-  font-size: 14px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 200;
-}
+.modal-actions { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
 
-.toast.show {
-  opacity: 1;
-}
-[hidden] {
-  display: none !important;
-}
+.note { margin-top: 12px; font-size: 12px; color: #777; }
+
+/* Универсальное правило скрытия */
+[hidden] { display: none !important; }

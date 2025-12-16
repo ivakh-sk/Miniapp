@@ -25,14 +25,20 @@ WEBAPP_URL = os.getenv("WEBAPP_URL", "").strip()
 ADMIN_CHAT_ID = os.getenv("ADMIN_CHAT_ID", "").strip()
 
 if not BOT_TOKEN:
-    raise RuntimeError("BOT_TOKEN не задан в .env")
+    raise RuntimeError("BOT_TOKEN не задан (задайте в .env локально или в Render Environment Variables)")
 if not WEBAPP_URL:
-    raise RuntimeError("WEBAPP_URL не задан в .env (например https://domain/game)")
+    raise RuntimeError("WEBAPP_URL не задан (например https://<your-render-domain>/game)")
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 router = Router()
 dp.include_router(router)
+
+wins = [
+    (0, 1, 2), (3, 4, 5), (6, 7, 8),
+    (0, 3, 6), (1, 4, 7), (2, 5, 8),
+    (0, 4, 8), (2, 4, 6)
+]
 
 
 def _tg_validate_init_data(init_data: str, bot_token: str, max_age_sec: int = 3600) -> dict:
