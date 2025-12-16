@@ -139,21 +139,31 @@ app.mount("/game", StaticFiles(directory="public", html=True), name="game")
 async def api_win(x_tg_init_data: str = Header(default="", alias="X-Tg-Init-Data")):
     user_id = _get_user_id_from_init_data(x_tg_init_data)
     code = _promo_code_5_digits()
+
+    # 1) Всегда возвращаем код
+    # 2) Уведомление в Telegram — не должно ломать выдачу промокода
+    notify_error = None
     try:
         await _notify(f"Победа! Промокод выдан: {code}", user_chat_id=user_id)
-        return {"ok": True, "code": code}
     except Exception as e:
-        return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
+        notify_error = str(e)
+
+    return {"ok": True, "code": code, "notify_ok": notify_error is None, "notify_error": notify_error}
 
 
 @app.post("/api/lose")
 async def api_lose(x_tg_init_data: str = Header(default="", alias="X-Tg-Init-Data")):
     user_id = _get_user_id_from_init_data(x_tg_init_data)
+
+    # Проигрыш тоже не должен падать из-за отправки сообщения
+    notify_error = None
     try:
         await _notify("Проигрыш", user_chat_id=user_id)
-        return {"ok": True}
     except Exception as e:
-        return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
+        notify_error = str(e)
+
+    return {"ok": True, "notify_ok": notify_error is None, "notify_error": notify_error}
+
 
 
 @app.get("/api/health")
