@@ -32,26 +32,31 @@
       <div class="hint">
         Вы играете <span class="x">X</span>, компьютер — <span class="o">O</span>.
       </div>
-
-      <div id="ctaRow" class="cta" hidden>
-        <button id="playAgainBtn" class="btn primary" type="button">Сыграть ещё раз</button>
-      </div>
     </section>
 
-    <!-- Окно победы -->
-    <div id="winOverlay" class="overlay" hidden>
+    <!-- Универсальное окно результата (победа/проигрыш/ничья) -->
+    <div id="resultOverlay" class="overlay" hidden>
       <div class="modal">
-        <h2>Победа!</h2>
-        <p>Ваш промокод на скидку:</p>
+        <h2 id="resultTitle">Победа!</h2>
 
-        <div id="promoCode" class="promo"></div>
+        <p id="resultText">Ваш промокод на скидку:</p>
 
-        <div class="modal-actions">
-          <button id="copyBtn" class="btn ghost" type="button">Скопировать</button>
-          <button id="closeWinBtn" class="btn primary" type="button">Сыграть ещё раз</button>
+        <!-- Блок с промокодом показываем только при победе -->
+        <div id="promoBlock" hidden>
+          <div id="promoCode" class="promo"></div>
+          <div class="modal-actions">
+            <button id="copyBtn" class="btn ghost" type="button">Скопировать</button>
+            <button id="playAgainBtn" class="btn primary" type="button">Сыграть ещё раз</button>
+          </div>
+          <p class="note">Промокод отображается один раз. Скопируйте и сохраните.</p>
         </div>
 
-        <p class="note">Промокод отображается один раз. Скопируйте и сохраните.</p>
+        <!-- Блок без промокода (проигрыш/ничья) -->
+        <div id="noPromoBlock" hidden>
+          <div class="modal-actions single">
+            <button id="playAgainBtn2" class="btn primary" type="button">Сыграть ещё раз</button>
+          </div>
+        </div>
       </div>
     </div>
   </main>

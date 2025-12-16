@@ -1,13 +1,18 @@
 const boardEl = document.getElementById("board");
 const statusEl = document.getElementById("status");
 const resetBtn = document.getElementById("resetBtn");
-const playAgainBtn = document.getElementById("playAgainBtn");
-const ctaRow = document.getElementById("ctaRow");
 
-const winOverlay = document.getElementById("winOverlay");
+const resultOverlay = document.getElementById("resultOverlay");
+const resultTitle = document.getElementById("resultTitle");
+const resultText = document.getElementById("resultText");
+
+const promoBlock = document.getElementById("promoBlock");
 const promoCodeEl = document.getElementById("promoCode");
-const closeWinBtn = document.getElementById("closeWinBtn");
 const copyBtn = document.getElementById("copyBtn");
+const playAgainBtn = document.getElementById("playAgainBtn");
+
+const noPromoBlock = document.getElementById("noPromoBlock");
+const playAgainBtn2 = document.getElementById("playAgainBtn2");
 
 const tg = window.Telegram?.WebApp;
 if (tg) {
@@ -62,43 +67,37 @@ function aiMove() {
   const free = board.map((v, i) => (v ? null : i)).filter(v => v !== null);
   if (!free.length) return;
 
-  // 0.55–0.7 — “комфортно обыгрываемый”
+  // Сделали ИИ “чуть тупее”
   const SKILL = 0.60;
 
-  // Иногда ИИ ошибается — случайный ход
   if (Math.random() > SKILL) {
     board[free[Math.floor(Math.random() * free.length)]] = AI;
     return;
   }
 
-  // Выиграть одним ходом
   const winIdx = findBestImmediateMove(AI);
   if (winIdx !== null) {
     board[winIdx] = AI;
     return;
- t  }
+  }
 
-  // Блокировать игрока
   const blockIdx = findBestImmediateMove(PLAYER);
   if (blockIdx !== null) {
     board[blockIdx] = AI;
     return;
   }
 
-  // Центр
   if (board[4] === null) {
     board[4] = AI;
     return;
   }
 
-  // Углы
   const corners = [0, 2, 6, 8].filter(i => board[i] === null);
   if (corners.length) {
     board[corners[Math.floor(Math.random() * corners.length)]] = AI;
     return;
   }
 
-  // Остальное
   board[free[Math.floor(Math.random() * free.length)]] = AI;
 }
 
@@ -129,6 +128,37 @@ async function apiPost(url) {
   return { okHttp: res.ok, data };
 }
 
+function showOverlayWin(code) {
+  resultTitle.textContent = "Победа!";
+  resultText.textContent = "Ваш промокод на скидку:";
+  promoCodeEl.textContent = String(code);
+
+  promoBlock.hidden = false;
+  noPromoBlock.hidden = true;
+
+  resultOverlay.hidden = false;
+}
+
+function showOverlayLose() {
+  resultTitle.textContent = "Не расстраивайтесь!";
+  resultText.textContent = "В следующий раз точно получится. Хотите сыграть ещё раз?";
+
+  promoBlock.hidden = true;
+  noPromoBlock.hidden = false;
+
+  resultOverlay.hidden = false;
+}
+
+function showOverlayDraw() {
+  resultTitle.textContent = "Ничья!";
+  resultText.textContent = "Очень близко. Сыграем ещё раз?";
+
+  promoBlock.hidden = true;
+  noPromoBlock.hidden = false;
+
+  resultOverlay.hidden = false;
+}
+
 async function nextTurn() {
   render();
   const r = checkWinner();
@@ -157,24 +187,27 @@ async function endGame(result) {
 
     const { okHttp, data } = await apiPost("/api/win");
     if (!okHttp || !data?.ok || !data?.code) {
+      // если промокод не пришел — покажем победу без кода
+      showOverlayWin("");
       promoCodeEl.textContent = "";
-      ctaRow.hidden = false;
-      statusEl.textContent = "Победа! (не удалось получить промокод)";
+      resultText.textContent = "Победа! (не удалось получить промокод)";
       return;
     }
 
-    promoCodeEl.textContent = String(data.code); // цифры
-    winOverlay.hidden = false;
-
-  } else if (result === AI) {
-    statusEl.textContent = "Проигрыш. Хотите сыграть ещё раз?";
-    await apiPost("/api/lose");
-    ctaRow.hidden = false;
-
-  } else {
-    statusEl.textContent = "Ничья. Сыграем ещё раз?";
-    ctaRow.hidden = false;
+    showOverlayWin(data.code);
+    return;
   }
+
+  if (result === AI) {
+    statusEl.textContent = "Проигрыш";
+    await apiPost("/api/lose");
+    showOverlayLose();
+    return;
+  }
+
+  // draw
+  statusEl.textContent = "Ничья";
+  showOverlayDraw();
 }
 
 function reset() {
@@ -183,8 +216,9 @@ function reset() {
   playerTurn = true;
 
   promoCodeEl.textContent = "";
-  winOverlay.hidden = true;
-  ctaRow.hidden = true;
+  resultOverlay.hidden = true;
+  promoBlock.hidden = true;
+  noPromoBlock.hidden = true;
 
   statusEl.textContent = "Ваш ход";
   render();
@@ -192,7 +226,7 @@ function reset() {
 
 resetBtn.onclick = reset;
 playAgainBtn.onclick = reset;
-closeWinBtn.onclick = reset;
+playAgainBtn2.onclick = reset;
 
 copyBtn.onclick = async () => {
   const code = promoCodeEl.textContent.trim();
