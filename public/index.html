@@ -2,12 +2,15 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>Queen of XO</title>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="styles.css" />
+
+  <!-- cache-bust: меняйте цифру при необходимости -->
+  <link rel="stylesheet" href="styles.css?v=20" />
 </head>
+
 <body>
   <main class="app">
     <header class="header">
@@ -20,7 +23,7 @@
 
     <section class="card">
       <div class="topbar">
-        <div id="status" class="status">Ваш ход</div>
+        <div id="status" class="status">Загружаем…</div>
       </div>
 
       <div id="board" class="board"></div>
@@ -34,14 +37,22 @@
       </div>
     </section>
 
-    <!-- Универсальное окно результата (победа/проигрыш/ничья) -->
+    <!-- Экран загрузки -->
+    <div id="loadingOverlay" class="overlay">
+      <div class="modal">
+        <h2 class="loadingTitle">Загружаем игру…</h2>
+        <p class="loadingText">Секунду — я наведу порядок на доске.</p>
+        <div class="spinner" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <!-- Окно результата (победа/проигрыш/ничья) -->
     <div id="resultOverlay" class="overlay" hidden>
       <div class="modal">
-        <h2 id="resultTitle">Победа!</h2>
+        <h2 id="resultTitle">Результат</h2>
+        <p id="resultText">…</p>
 
-        <p id="resultText">Ваш промокод на скидку:</p>
-
-        <!-- Блок с промокодом показываем только при победе -->
+        <!-- Победа: промокод -->
         <div id="promoBlock" hidden>
           <div id="promoCode" class="promo"></div>
           <div class="modal-actions">
@@ -51,7 +62,7 @@
           <p class="note">Промокод отображается один раз. Скопируйте и сохраните.</p>
         </div>
 
-        <!-- Блок без промокода (проигрыш/ничья) -->
+        <!-- Проигрыш/ничья: только “сыграть ещё раз” -->
         <div id="noPromoBlock" hidden>
           <div class="modal-actions single">
             <button id="playAgainBtn2" class="btn primary" type="button">Сыграть ещё раз</button>
@@ -61,6 +72,7 @@
     </div>
   </main>
 
-  <script src="app.js"></script>
+  <!-- cache-bust: меняйте цифру при необходимости -->
+  <script src="app.js?v=20"></script>
 </body>
 </html>

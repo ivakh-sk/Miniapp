@@ -2,6 +2,8 @@ const boardEl = document.getElementById("board");
 const statusEl = document.getElementById("status");
 const resetBtn = document.getElementById("resetBtn");
 
+const loadingOverlay = document.getElementById("loadingOverlay");
+
 const resultOverlay = document.getElementById("resultOverlay");
 const resultTitle = document.getElementById("resultTitle");
 const resultText = document.getElementById("resultText");
@@ -15,10 +17,9 @@ const noPromoBlock = document.getElementById("noPromoBlock");
 const playAgainBtn2 = document.getElementById("playAgainBtn2");
 
 const tg = window.Telegram?.WebApp;
-if (tg) {
-  tg.ready();
-  tg.expand();
-}
+
+// ВАЖНО: не делаем никаких fetch на старте.
+// API вызывается только при победе/проигрыше.
 
 const PLAYER = "X";
 const AI = "O";
@@ -33,16 +34,27 @@ const wins = [
   [0,4,8],[2,4,6]
 ];
 
+function hideLoader() {
+  // маленькая задержка, чтобы загрузка выглядела “мягко”
+  setTimeout(() => {
+    loadingOverlay.hidden = true;
+  }, 250);
+}
+
 function render() {
   boardEl.innerHTML = "";
   board.forEach((v, i) => {
     const cell = document.createElement("button");
     cell.className = "cell";
     cell.type = "button";
+
     if (v) {
       cell.textContent = v;
       cell.classList.add(v === PLAYER ? "x" : "o");
+    } else {
+      cell.textContent = "";
     }
+
     cell.onclick = () => clickCell(i);
     boardEl.appendChild(cell);
   });
@@ -50,9 +62,7 @@ function render() {
 
 function checkWinner() {
   for (const [a,b,c] of wins) {
-    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-      return board[a];
-    }
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) return board[a];
   }
   return board.every(Boolean) ? "draw" : null;
 }
@@ -61,44 +71,6 @@ function clickCell(i) {
   if (!active || !playerTurn || board[i]) return;
   board[i] = PLAYER;
   nextTurn();
-}
-
-function aiMove() {
-  const free = board.map((v, i) => (v ? null : i)).filter(v => v !== null);
-  if (!free.length) return;
-
-  // Сделали ИИ “чуть тупее”
-  const SKILL = 0.60;
-
-  if (Math.random() > SKILL) {
-    board[free[Math.floor(Math.random() * free.length)]] = AI;
-    return;
-  }
-
-  const winIdx = findBestImmediateMove(AI);
-  if (winIdx !== null) {
-    board[winIdx] = AI;
-    return;
-  }
-
-  const blockIdx = findBestImmediateMove(PLAYER);
-  if (blockIdx !== null) {
-    board[blockIdx] = AI;
-    return;
-  }
-
-  if (board[4] === null) {
-    board[4] = AI;
-    return;
-  }
-
-  const corners = [0, 2, 6, 8].filter(i => board[i] === null);
-  if (corners.length) {
-    board[corners[Math.floor(Math.random() * corners.length)]] = AI;
-    return;
-  }
-
-  board[free[Math.floor(Math.random() * free.length)]] = AI;
 }
 
 function findBestImmediateMove(symbol) {
@@ -110,19 +82,45 @@ function findBestImmediateMove(symbol) {
     const countEmpty = vals.filter(v => v === null).length;
 
     if (countSymbol === 2 && countEmpty === 1) {
-      const emptyIndex = line.find(i => board[i] === null);
-      return emptyIndex ?? null;
+      return line.find(i => board[i] === null) ?? null;
     }
   }
   return null;
 }
 
+function aiMove() {
+  const free = board.map((v, i) => (v ? null : i)).filter(v => v !== null);
+  if (!free.length) return;
+
+  // “чуть тупее”
+  const SKILL = 0.60;
+
+  if (Math.random() > SKILL) {
+    board[free[Math.floor(Math.random() * free.length)]] = AI;
+    return;
+  }
+
+  const winIdx = findBestImmediateMove(AI);
+  if (winIdx !== null) { board[winIdx] = AI; return; }
+
+  const blockIdx = findBestImmediateMove(PLAYER);
+  if (blockIdx !== null) { board[blockIdx] = AI; return; }
+
+  if (board[4] === null) { board[4] = AI; return; }
+
+  const corners = [0, 2, 6, 8].filter(i => board[i] === null);
+  if (corners.length) {
+    board[corners[Math.floor(Math.random() * corners.length)]] = AI;
+    return;
+  }
+
+  board[free[Math.floor(Math.random() * free.length)]] = AI;
+}
+
 async function apiPost(url) {
   const res = await fetch(url, {
     method: "POST",
-    headers: {
-      "X-Tg-Init-Data": tg?.initData || ""
-    }
+    headers: { "X-Tg-Init-Data": tg?.initData || "" }
   });
   const data = await res.json().catch(() => ({}));
   return { okHttp: res.ok, data };
@@ -131,21 +129,19 @@ async function apiPost(url) {
 function showOverlayWin(code) {
   resultTitle.textContent = "Победа!";
   resultText.textContent = "Ваш промокод на скидку:";
-  promoCodeEl.textContent = String(code);
+  promoCodeEl.textContent = String(code || "");
 
   promoBlock.hidden = false;
   noPromoBlock.hidden = true;
-
   resultOverlay.hidden = false;
 }
 
 function showOverlayLose() {
   resultTitle.textContent = "Не расстраивайтесь!";
-  resultText.textContent = "В следующий раз точно получится. Хотите сыграть ещё раз?";
+  resultText.textContent = "В следующий раз точно получится. Сыграем ещё раз?";
 
   promoBlock.hidden = true;
   noPromoBlock.hidden = false;
-
   resultOverlay.hidden = false;
 }
 
@@ -155,12 +151,12 @@ function showOverlayDraw() {
 
   promoBlock.hidden = true;
   noPromoBlock.hidden = false;
-
   resultOverlay.hidden = false;
 }
 
 async function nextTurn() {
   render();
+
   const r = checkWinner();
   if (r) return endGame(r);
 
@@ -184,12 +180,11 @@ async function endGame(result) {
 
   if (result === PLAYER) {
     statusEl.textContent = "Победа!";
-
     const { okHttp, data } = await apiPost("/api/win");
+
+    // если сервер “чихнул”, не ломаем UX
     if (!okHttp || !data?.ok || !data?.code) {
-      // если промокод не пришел — покажем победу без кода
       showOverlayWin("");
-      promoCodeEl.textContent = "";
       resultText.textContent = "Победа! (не удалось получить промокод)";
       return;
     }
@@ -200,12 +195,12 @@ async function endGame(result) {
 
   if (result === AI) {
     statusEl.textContent = "Проигрыш";
+    // проигрыш тоже отправляем, но это не на старте — только по факту
     await apiPost("/api/lose");
     showOverlayLose();
     return;
   }
 
-  // draw
   statusEl.textContent = "Ничья";
   showOverlayDraw();
 }
@@ -215,7 +210,6 @@ function reset() {
   active = true;
   playerTurn = true;
 
-  promoCodeEl.textContent = "";
   resultOverlay.hidden = true;
   promoBlock.hidden = true;
   noPromoBlock.hidden = true;
@@ -231,11 +225,17 @@ playAgainBtn2.onclick = reset;
 copyBtn.onclick = async () => {
   const code = promoCodeEl.textContent.trim();
   if (!code) return;
-  try {
-    await navigator.clipboard.writeText(code);
-  } catch {
-    // если clipboard запрещен — можно выделить вручную
-  }
+  try { await navigator.clipboard.writeText(code); } catch {}
 };
 
-reset();
+// Инициализация
+(function init() {
+  // Лоадер виден по умолчанию (в HTML). Здесь просто корректно закрываем.
+  try {
+    if (tg) { tg.ready(); tg.expand(); }
+  } catch {}
+
+  statusEl.textContent = "Ваш ход";
+  render();
+  hideLoader();
+})();
